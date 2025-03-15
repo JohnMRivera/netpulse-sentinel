@@ -1,0 +1,9 @@
+# Node.js (Frontend con Vue.js)
+frontend/node_modules
+
+# Python (Backend)
+backend/venv
+
+# Logs y archivos PID
+logs
+*.pid
