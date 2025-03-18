@@ -30,6 +30,11 @@ git clone https://github.com/JohnMRivera/netpulse-sentinel.git
 cd netpulse-sentinel
 ```
 
+### Configurar entorno
+```bash
+cp .env.example .env    # Configurar valores del archivo .env
+```
+
 ### Configurar y ejecutar el backend
 ```bash
 cd backend

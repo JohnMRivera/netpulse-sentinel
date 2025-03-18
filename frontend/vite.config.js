@@ -15,7 +15,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  // server: {
-  //   port: 5173
-  // }
+  server: {
+    host: process.env.FRONTEND_HOST,
+    port: process.env.FRONTEND_PORT
+  }
 })

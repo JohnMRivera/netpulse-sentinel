@@ -31,6 +31,8 @@ case $1 in
         if [ ! -f backend.pid ] && [ ! -f fronted.pid ] && [ ! -f electron.pid ]; then
             echo "Iniciando proyecto..."
 
+            export $(grep -v "^#" .env | xargs)
+
             # Iniciando Backend
             source backend/venv/bin/activate
             python backend/main.py & echo $! > backend.pid
@@ -39,9 +41,19 @@ case $1 in
             cd frontend
             npm run dev & echo $! > ../frontend.pid
 
+            # Dormir el proceso para cargar vite antes de cargar electron
+            until curl -s "http://$FRONTEND_HOST:$FRONTEND_PORT" > /dev/null; do
+                sleep 0.5
+            done
+            
             # Iniciando Electorn
             npm run electron:start & echo $! > ../electron.pid
             ..
+
+            sleep 3
+
+            echo "Backend corriendo en $BACKEND_HOST:$BACKEND_PORT"
+            echo "Frontend corriendo en $FRONTEND_HOST:$FRONTEND_PORT"
 
             echo "Proyecto iniciado correctamente."
         else

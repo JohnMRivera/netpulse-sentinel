@@ -7,3 +7,6 @@ backend/venv
 # Logs y archivos PID
 logs
 *.pid
+
+# Configuración
+.env

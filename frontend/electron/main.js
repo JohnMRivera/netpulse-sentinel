@@ -1,4 +1,3 @@
-// const { app, BrowserWindow } = require('electron')
 import { app, BrowserWindow } from 'electron'
 
 let window
@@ -12,5 +11,5 @@ app.whenReady().then(() => {
         }
     })
 
-    window.loadURL('http://localhost:5173')
+    window.loadURL(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`)
 })
