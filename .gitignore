@@ -3,6 +3,7 @@ frontend/node_modules
 
 # Python (Backend)
 backend/venv
+backend/*/__pycache__
 
 # Logs y archivos PID
 logs
