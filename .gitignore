@@ -1,0 +1,13 @@
+# Node.js (Frontend con Vue.js)
+frontend/node_modules
+
+# Python (Backend)
+backend/venv
+backend/*/__pycache__
+
+# Logs y archivos PID
+logs
+*.pid
+
+# Configuración
+.env
