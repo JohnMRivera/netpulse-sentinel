@@ -25,20 +25,14 @@ function end_process(){
     fi
 }
 
+NPS_PATH=$(cd $(dirname $0) && pwd)
+cd $NPS_PATH
+
 case $1 in
-    --start | -s)
+    --run | -r)
         # Verificando que los archivos .pid existan
         if [ ! -f backend.pid ] && [ ! -f fronted.pid ] && [ ! -f electron.pid ]; then
             echo "Iniciando proyecto..."
-
-            # Definiendo variable de entorno BACKEND_PATH
-            if grep -q "^BACKEND_PATH=" .env; then
-                BACKEND_PATH="$(pwd)/backend"
-                sed -i "s|^BACKEND_PATH=.*|BACKEND_PATH=$BACKEND_PATH|" ".env"
-            fi
-
-            # Exportando variables de entorno de .env
-            export $(grep -v "^#" .env | xargs)
 
             # Iniciando Backend
             source backend/venv/bin/activate
@@ -53,7 +47,7 @@ case $1 in
                 sleep 0.5
             done
             
-            # Iniciando Electorn
+            # Iniciando Electron
             npm run electron:start & echo $! > ../electron.pid
             ..
 
@@ -67,7 +61,7 @@ case $1 in
             echo "El proyecto ya se encuentra en ejecución."
         fi
     ;;
-    --end | -e)
+    --stop | -s)
         echo "Finalizando el proyecto..."
         # Llamando a la función end_process
         end_process "backend.pid"
@@ -75,12 +69,24 @@ case $1 in
         end_process "electron.pid"
         echo "Proyecto frinalizado."
     ;;
+    --export-env | -e)
+            # Verificar que el fichero .env exista
+            if [[ -f .env ]]; then
+                # Exportando variables de entorno de .env
+                # export $(grep -v "^#" .env | xargs)
+                sed -i "s|^NPS_PATH=.*|NPS_PATH=$NPS_PATH|" ".env"
+                source .env
+            else
+                echo "No existe el fichero .env\nPuede crearlo manualmente y definir las variables de entorno"
+            fi
+    ;;
     --help | -h)
+        export $(grep -v "^#" .env | xargs)
         echo -e "Uso: projctl.sh [opción]\n"
-        echo "  --start, -s   Inicia el proyecto."
-        echo "  --end, -e     Detiene el proyecto."
-        echo "  --help, -h    Muestra este mensaje de ayuda."
-        echo ""
+        echo "  --run, -r           Inicia el proyecto."
+        echo "  --stop, -s          Detiene el proyecto."
+        echo "  --help, -h          Muestra este mensaje de ayuda."
+        echo "  --export-env, -e    Exportar variables de entorno del archivo .env"
     ;;
     *)
         echo "Opción no valida\nUsa 'projctl.sh --help' para más información."
