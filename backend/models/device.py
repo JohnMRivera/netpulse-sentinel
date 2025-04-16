@@ -1,5 +1,3 @@
-from core.database import DBConnection
-
 class Device:
 
     def __init__(self, device_id, device_ip, device_mac, device_status):

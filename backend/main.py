@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import os
-from api.device import device_bp
+from api.devices import devices_bp
 
 backend_host = os.getenv("BACKEND_HOST")
 backend_port = os.getenv("BACKEND_PORT")
@@ -17,7 +17,7 @@ CORS(
     allow_headers=["Content-Type","Authirization"]
 )
 
-app.register_blueprint(device_bp, url_prefix="/devices")
+app.register_blueprint(devices_bp, url_prefix="/devices")
 
 @app.route("/status", methods=['GET'])
 def get_status():

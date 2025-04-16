@@ -2,11 +2,14 @@ import psycopg2
 
 class DBConnection:
 
+    # Se inicializa la variable connection
     def __init__(self):
         self.connection = None
 
+    # Función para obtener la conexión a la base de datos
     def getConnection(self):
         try:
+            # Se establece la conexión a la base de datos
             self.connection = psycopg2.connect(
                 user="nps_admin",
                 password="NPS dfpsc3108 .",
@@ -14,8 +17,7 @@ class DBConnection:
                 database="nps_db"
             )
 
-            print("Conexión exitosa")
-
+            # Se devuelve la conexión
             return self.connection
         
         except Exception as e:
@@ -23,8 +25,10 @@ class DBConnection:
 
             return None
 
+    # Función para cerrar la conexión a la base de datos
     def closeConnection(self):
         try:
+            # Si la conexión es válida, se cierra
             if self.connection:
                 self.connection.close()
 
