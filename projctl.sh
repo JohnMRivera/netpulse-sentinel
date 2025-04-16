@@ -31,6 +31,13 @@ case $1 in
         if [ ! -f backend.pid ] && [ ! -f fronted.pid ] && [ ! -f electron.pid ]; then
             echo "Iniciando proyecto..."
 
+            # Definiendo variable de entorno BACKEND_PATH
+            if grep -q "^BACKEND_PATH=" .env; then
+                BACKEND_PATH="$(pwd)/backend"
+                sed -i "s|^BACKEND_PATH=.*|BACKEND_PATH=$BACKEND_PATH|" ".env"
+            fi
+
+            # Exportando variables de entorno de .env
             export $(grep -v "^#" .env | xargs)
 
             # Iniciando Backend
@@ -61,7 +68,7 @@ case $1 in
         fi
     ;;
     --end | -e)
-        echo "Finzalizando el proyecto..."
+        echo "Finalizando el proyecto..."
         # Llamando a la función end_process
         end_process "backend.pid"
         end_process "frontend.pid"
