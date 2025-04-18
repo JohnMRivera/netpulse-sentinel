@@ -32,31 +32,36 @@ case $1 in
     --run | -r)
         # Verificando que los archivos .pid existan
         if [ ! -f backend.pid ] && [ ! -f fronted.pid ] && [ ! -f electron.pid ]; then
-            echo "Iniciando proyecto..."
 
-            # Iniciando Backend
-            source backend/venv/bin/activate
-            python backend/main.py & echo $! > backend.pid
+            if [[ ! $FRONTEND_HOST ]] && [[ ! $FRONTEND_PORT ]] && [[ ! $BACKEND_HOST ]] && [[ ! $BACKEND_PORT ]]; then
+                echo -e "Las variables de entorno no han sido definidas.\nExporte las variables ejecutando 'projctl.sh --export-env' antes de iniciar el proyecto"
+            else
+                echo "Iniciando proyecto..."
 
-            # Iniciando Frontend
-            cd frontend
-            npm run dev & echo $! > ../frontend.pid
+                # Iniciando Backend
+                source backend/venv/bin/activate
+                python backend/main.py & echo $! > backend.pid
 
-            # Dormir el proceso para cargar vite antes de cargar electron
-            until curl -s "http://$FRONTEND_HOST:$FRONTEND_PORT" > /dev/null; do
-                sleep 0.5
-            done
-            
-            # Iniciando Electron
-            npm run electron:start & echo $! > ../electron.pid
-            ..
+                # Iniciando Frontend
+                cd frontend
+                npm run dev & echo $! > ../frontend.pid
 
-            sleep 3
+                # Dormir el proceso para cargar vite antes de cargar electron
+                until curl -s "http://$FRONTEND_HOST:$FRONTEND_PORT" > /dev/null; do
+                    sleep 0.5
+                done
 
-            echo "Backend corriendo en $BACKEND_HOST:$BACKEND_PORT"
-            echo "Frontend corriendo en $FRONTEND_HOST:$FRONTEND_PORT"
+                # Iniciando Electron
+                npm run electron:start & echo $! > ../electron.pid
+                ..
 
-            echo "Proyecto iniciado correctamente."
+                sleep 3
+
+                echo "Backend corriendo en $BACKEND_HOST:$BACKEND_PORT"
+                echo "Frontend corriendo en $FRONTEND_HOST:$FRONTEND_PORT"
+
+                echo "Proyecto iniciado correctamente."
+            fi
         else
             echo "El proyecto ya se encuentra en ejecución."
         fi
@@ -79,6 +84,13 @@ case $1 in
             else
                 echo "No existe el fichero .env\nPuede crearlo manualmente y definir las variables de entorno"
             fi
+    ;;
+    --migrate-db | -m)
+        echo "Ejecutando migraciones de la base de datos..."
+        cd backend
+        source venv/bin/activate
+        python -m db.migrate
+        cd ..
     ;;
     --help | -h)
         export $(grep -v "^#" .env | xargs)
