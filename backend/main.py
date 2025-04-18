@@ -1,8 +1,11 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import os
+import dotenv
+
 from api.devices import devices_bp
 
+dotenv.load_dotenv()
 backend_host = os.getenv("BACKEND_HOST")
 backend_port = os.getenv("BACKEND_PORT")
 

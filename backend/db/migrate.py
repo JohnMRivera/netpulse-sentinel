@@ -1,3 +1,8 @@
+import psycopg2
+import dotenv
+import os
+
+from core import DBConnection
 from db.migrations import CreateUsers
 from db.migrations import CreateRoles
 from db.migrations import CreatePermissions
@@ -7,8 +12,41 @@ from db.migrations import CreateDevicesLogs
 from db.migrations import CreateAlerts
 from db.migrations import CreateUsersDevicesAlerts
 from db.migrations import CreateAlertsLogs
-import os
-import sys
+
+dbConnection = DBConnection()
+connection = dbConnection.getConnection()
+
+dotenv.load_dotenv()
+DB_NAME = os.getenv('DB_NAME')
+
+def createDB():
+    sql = "SELECT 1 FROM pg_database WHERE datname = %s;"
+
+    rowcount = None
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(sql, (DB_NAME,))
+
+            rowcount = cursor.rowcount
+
+        if rowcount == 0:
+            print(f"La base de datos {DB_NAME} no existe\nCreando base de datos...")
+
+            sql = f"CREATE DATABASE {DB_NAME}"
+
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(sql)
+
+                    print(f"Base de datos {DB_NAME} creada exitosamente")
+            except psycopg2.Error as e:
+                print(f"Error al intentar crear la base de datos")
+
+    except psycopg2.Error as e:
+        print(f"Error al intentar varificar la base de datos: {str(e)}")
+
+createDB()
 
 create_devices = CreateDevices()
 create_devices.up()
